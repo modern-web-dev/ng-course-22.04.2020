@@ -21,6 +21,8 @@
     </table>
   </div>
   <div class="col-sm-4">
-    <app-book-details></app-book-details>
+    <app-book-details
+      *ngIf="selectedBook"
+      [book]="selectedBook" (bookChange)="applyBookChanges($event)"></app-book-details>
   </div>
 </div>
