@@ -1,1 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+
+$enable-rounded: false;
+$primary: #12b3db;
+
+@import "../node_modules/bootstrap/scss/bootstrap";
