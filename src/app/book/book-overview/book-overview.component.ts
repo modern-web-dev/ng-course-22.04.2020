@@ -1,28 +1,20 @@
 import {Component} from '@angular/core';
 import {Book} from '../book.model';
+import {BookService} from '../book.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-book-overview',
   templateUrl: './book-overview.component.html',
-  styleUrls: ['./book-overview.component.scss']
+  styleUrls: ['./book-overview.component.scss'],
+  providers: [BookService]
 })
 export class BookOverviewComponent {
-  books: Book[];
+  books$: Observable<Book[]>;
   selectedBook: Book | null = null;
 
-  constructor() {
-    this.books = [
-      {
-        id: 1,
-        author: 'Joe',
-        title: 'JS in action'
-      },
-      {
-        id: 2,
-        author: 'Douglas Crockford',
-        title: 'JavaScript. The Good Parts'
-      }
-    ];
+  constructor(books: BookService) {
+    this.books$ = books.getAll();
   }
 
   selectBook(book: Book) {
@@ -34,8 +26,8 @@ export class BookOverviewComponent {
   }
 
   applyBookChanges(updatedBook: Book) {
-    this.books = this.books.map(
-      book => book.id === updatedBook.id ? updatedBook : book);
+    // this.books = this.books.map(
+    //   book => book.id === updatedBook.id ? updatedBook : book);
     this.selectedBook = updatedBook;
   }
 }

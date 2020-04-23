@@ -9,7 +9,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let book of books; index as i"
+      <tr *ngFor="let book of books$ | async; index as i"
           (click)="selectBook(book)"
           [class.table-active]="isBookSelected(book)"
           class="my-class">
