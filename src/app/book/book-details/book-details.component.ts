@@ -9,7 +9,6 @@ import {Book} from '../book.model';
 export class BookDetailsComponent {
   @Input()
   book: Book;
-
   @Output()
   bookChange = new EventEmitter<Book>();
 

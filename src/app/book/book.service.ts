@@ -1,28 +1,28 @@
 import {Book} from './book.model';
-import {Observable} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
 
 @Injectable()
 export class BookService {
-  private books = [
-    {
-      id: 1,
-      author: 'Joe',
-      title: 'JS in action'
-    },
-    {
-      id: 2,
-      author: 'Douglas Crockford',
-      title: 'JavaScript. The Good Parts'
-    }
-  ];
+  private bookSubject = new BehaviorSubject<Book[]>(
+    [
+      {
+        id: 1,
+        author: 'Joe',
+        title: 'JS in action'
+      },
+      {
+        id: 2,
+        author: 'Douglas Crockford',
+        title: 'JavaScript. The Good Parts'
+      }
+    ]);
 
-  getAll(): Observable<Book[]> {
-    return new Observable((subscriber) => {
-      setTimeout(() => {
-        subscriber.next([...this.books]);
-        subscriber.complete();
-      }, 2000);
-    });
+  readonly values$ = this.bookSubject.asObservable();
+
+  updateBook(updatedBook: Book): void {
+    const currentBooks = this.bookSubject.getValue();
+    this.bookSubject.next(currentBooks.map(
+      book => book.id === updatedBook.id ? updatedBook : book));
   }
 }

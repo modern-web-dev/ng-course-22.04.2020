@@ -13,8 +13,8 @@ export class BookOverviewComponent {
   books$: Observable<Book[]>;
   selectedBook: Book | null = null;
 
-  constructor(books: BookService) {
-    this.books$ = books.getAll();
+  constructor(private readonly books: BookService) {
+    this.books$ = this.books.values$;
   }
 
   selectBook(book: Book) {
@@ -26,8 +26,7 @@ export class BookOverviewComponent {
   }
 
   applyBookChanges(updatedBook: Book) {
-    // this.books = this.books.map(
-    //   book => book.id === updatedBook.id ? updatedBook : book);
+    this.books.updateBook(updatedBook);
     this.selectedBook = updatedBook;
   }
 }
