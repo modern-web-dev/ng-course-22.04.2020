@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {Book} from '../book.model';
 import {BookService} from '../book.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {filter, map, pluck, switchMap} from 'rxjs/operators';
+import {map, pluck, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 
 @Component({
@@ -12,16 +12,16 @@ import {Observable} from 'rxjs';
 })
 export class BookDetailsComponent {
   book$: Observable<Book>;
+  currentBookId: number;
 
   constructor(private readonly books: BookService,
-              router: Router,
+              private readonly router: Router,
               route: ActivatedRoute) {
-    this.book$ = route.params
-      .pipe( // {id: '2', abc: 'cosTam'}
-        pluck('id'),
-        onlyCorrectIds(),
-        parseId(),
-        switchMap(id => this.books.getOne(id))
+    this.book$ = route.data
+      .pipe(
+        pluck('book'),
+        map(book => book || {author: '', title: ''}),
+        tap(book => this.currentBookId = book.id)
       );
   }
 
@@ -31,21 +31,12 @@ export class BookDetailsComponent {
     const authorElement = formElement.querySelector<HTMLInputElement>('#author');
     const titleElement = formElement.querySelector<HTMLInputElement>('#title');
 
-    // this.books.updateBook({
-    //   id: this.book.id,
-    //   author: authorElement.value,
-    //   title: titleElement.value
-    // });
+    this.books.saveOrUpdateBook({
+      id: this.currentBookId,
+      author: authorElement.value,
+      title: titleElement.value
+    });
+
+    this.router.navigate(['/books']);
   }
-}
-
-function onlyCorrectIds() {
-  return filter(idAsString => {
-    const id = +idAsString;
-    return !isNaN(id);
-  });
-}
-
-function parseId() {
-  return map(idAsString => +idAsString);
 }
