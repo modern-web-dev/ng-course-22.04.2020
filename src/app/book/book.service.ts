@@ -1,8 +1,10 @@
 import {Book} from './book.model';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {Injectable} from '@angular/core';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class BookService {
   private bookSubject = new BehaviorSubject<Book[]>(
     [
@@ -24,5 +26,11 @@ export class BookService {
     const currentBooks = this.bookSubject.getValue();
     this.bookSubject.next(currentBooks.map(
       book => book.id === updatedBook.id ? updatedBook : book));
+  }
+
+  getOne(id: number): Observable<Book> {
+    const currentBooks = this.bookSubject.getValue();
+    const foundBook = currentBooks.find(book => book.id === id);
+    return foundBook ? of(foundBook) : throwError(`Book with id ${id} not found`);
   }
 }
