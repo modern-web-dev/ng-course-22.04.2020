@@ -3,7 +3,7 @@ import {BookService} from '../book.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {filter, pluck, takeUntil, tap} from 'rxjs/operators';
 import {Subject} from 'rxjs';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-book-details',
@@ -19,7 +19,12 @@ export class BookDetailsComponent implements OnDestroy {
               private readonly router: Router,
               route: ActivatedRoute) {
     this.bookForm = new FormGroup({
-      author: new FormControl('', Validators.required),
+      author: new FormControl('',
+        [
+          Validators.required,
+          Validators.maxLength(10),
+          // contains('Marek')
+        ]),
       title: new FormControl('', Validators.required)
     });
 
@@ -46,4 +51,30 @@ export class BookDetailsComponent implements OnDestroy {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
+
+  getErrorMsgs(author: string) {
+    const authorFormElement = this.bookForm.get(author);
+    const empty = authorFormElement.getError('required');
+    const maxLength = authorFormElement.getError('maxlength');
+    const notMarek = authorFormElement.getError('notMarek');
+    return empty ? 'Please provide a value' :
+      (maxLength ? `The value is too long
+      (max length: ${maxLength.requiredLength}, currently: ${maxLength.actualLength})` : 'Please provide value containing Marek');
+  }
+}
+
+
+function contains(what: string) {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value: string = control.value;
+    if (!isEmptyInputValue(value) && value.indexOf(what) === -1) {
+      return {contains: true};
+    }
+    return null;
+  };
+}
+
+function isEmptyInputValue(value) {
+  // we don't check for string here so it also works with arrays
+  return value == null || value.length === 0;
 }

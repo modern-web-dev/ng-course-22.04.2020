@@ -5,10 +5,13 @@
   <div class="form-group">
     <label for="author">Author</label>
     <input class="form-control" id="author" formControlName="author">
+    <app-error-msg [ofFormControl]="bookForm.get('author')"></app-error-msg>
   </div>
   <div class="form-group">
     <label for="title">Title</label>
     <input class="form-control" id="title" formControlName="title">
+    <app-error-msg
+      [ofFormControl]="bookForm.get('title')"></app-error-msg>
   </div>
   <button type="submit" class="btn btn-primary">Save</button>
 </form>
