@@ -4,3 +4,11 @@ $enable-rounded: false;
 $primary: #12b3db;
 
 @import "../node_modules/bootstrap/scss/bootstrap";
+
+input.ng-invalid.ng-touched, form.ng-submitted input.ng-invalid {
+  @extend .is-invalid;
+}
+
+input.ng-valid {
+  @extend .is-valid;
+}

@@ -1,42 +1,49 @@
-import {Component} from '@angular/core';
-import {Book} from '../book.model';
+import {Component, OnDestroy} from '@angular/core';
 import {BookService} from '../book.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {map, pluck, tap} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {filter, pluck, takeUntil, tap} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-book-details',
   templateUrl: './book-details.component.html',
   styleUrls: ['./book-details.component.scss']
 })
-export class BookDetailsComponent {
-  book$: Observable<Book>;
+export class BookDetailsComponent implements OnDestroy {
+  bookForm: FormGroup;
   currentBookId: number;
+  private unsubscribe$ = new Subject();
 
   constructor(private readonly books: BookService,
               private readonly router: Router,
               route: ActivatedRoute) {
-    this.book$ = route.data
-      .pipe(
-        pluck('book'),
-        map(book => book || {author: '', title: ''}),
-        tap(book => this.currentBookId = book.id)
-      );
-  }
-
-  save(event: Event) {
-    event.preventDefault();
-    const formElement = event.target as HTMLFormElement;
-    const authorElement = formElement.querySelector<HTMLInputElement>('#author');
-    const titleElement = formElement.querySelector<HTMLInputElement>('#title');
-
-    this.books.saveOrUpdateBook({
-      id: this.currentBookId,
-      author: authorElement.value,
-      title: titleElement.value
+    this.bookForm = new FormGroup({
+      author: new FormControl('', Validators.required),
+      title: new FormControl('', Validators.required)
     });
 
-    this.router.navigate(['/books']);
+    route.data.pipe(
+      takeUntil(this.unsubscribe$),
+      pluck('book'),
+      filter(book => book),
+      tap(book => this.currentBookId = book.id)
+    ).subscribe(book => this.bookForm.patchValue(book));
+  }
+
+  save() {
+    if (this.bookForm.valid) {
+      const book = this.bookForm.value;
+      this.books.saveOrUpdateBook({
+        ...book, id: this.currentBookId
+      });
+
+      this.router.navigate(['/books']);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 }
