@@ -41,9 +41,8 @@ export class BookDetailsComponent implements OnDestroy {
       const book = this.bookForm.value;
       this.books.saveOrUpdateBook({
         ...book, id: this.currentBookId
-      });
-
-      this.router.navigate(['/books']);
+      }).subscribe(
+        () => this.router.navigate(['/books']));
     }
   }
 

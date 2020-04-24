@@ -12,6 +12,6 @@ export class BookOverviewComponent {
   books$: Observable<Book[]>;
 
   constructor(private readonly books: BookService) {
-    this.books$ = this.books.values$;
+    this.books$ = this.books.getAll();
   }
 }

@@ -1,0 +1,19 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "author": "Joe",
+      "title": "JS in action"
+    },
+    {
+      "id": 2,
+      "author": "Douglas Crockford",
+      "title": "JavaScript. The Good Parts"
+    },
+    {
+      "author": "Maro",
+      "title": "JS for heros",
+      "id": 3
+    }
+  ]
+}
